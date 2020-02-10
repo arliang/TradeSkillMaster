@@ -23,7 +23,7 @@ local ItemInfo = TSM.Include("Service.ItemInfo")
 local Conversions = TSM.Include("Service.Conversions")
 TSM.Auction.classes.AuctionFilter = AuctionFilter
 local DEFAULT_83_SORTS = not TSM.IsWowClassic() and {
-	{ sortOrder = Enum.AuctionHouseSortOrder.Buyout, reverseSort = false },
+	{ sortOrder = Enum.AuctionHouseSortOrder.Price, reverseSort = false },
 	{ sortOrder = Enum.AuctionHouseSortOrder.Name, reverseSort = false },
 } or nil
 
@@ -507,8 +507,8 @@ function AuctionFilter._DoAuctionQueryThreaded(self)
 
 		query.searchString = self._name or ""
 		query.sorts = DEFAULT_83_SORTS
-		query.minLevel = self._minLevel or 0
-		query.maxLevel = self._maxLevel or 0
+		query.minLevel = self._minLevel
+		query.maxLevel = self._maxLevel
 		query.filters = filters
 		query.itemClassFilters = itemClassFilters
 		while true do

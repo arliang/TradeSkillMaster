@@ -1,5 +1,6 @@
-## v4.9.22 Changes
+## v4.9.24 Changes
 
-* [Retail] Ignoring errors from BugGrabber for now
+* [Retail] Fixed issue with invalid pets in groups
+* [Retail] Fixed issue with Sniper scanning the base group even when it has no operation
 
 [Known Issues](http://support.tradeskillmaster.com/display/KB/TSM4+Currently+Known+Issues)

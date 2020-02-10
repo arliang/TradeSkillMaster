@@ -875,6 +875,7 @@ do
 		L["Sales Summary"] = "Sales Summary"
 		L["Scan Complete Sound"] = "Scan Complete Sound"
 		L["Scan Paused"] = "Scan Paused"
+		L["Scan was slowed down by %s seconds by other AH addons."] = "Scan was slowed down by %s seconds by other AH addons."
 		L["Scanning %d / %d (Page %d / %d)"] = "Scanning %d / %d (Page %d / %d)"
 		L["Scanning is %d%% complete"] = "Scanning is %d%% complete"
 		L["Scroll wheel direction:"] = "Scroll wheel direction:"
