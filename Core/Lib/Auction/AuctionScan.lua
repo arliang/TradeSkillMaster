@@ -632,6 +632,7 @@ function private.ScanAuctionPageThreaded(auctionScan, filter)
 			local minPrice = results[i].minPrice
 			local totalQuantity = results[i].totalQuantity
 			local baseItemString, itemString, itemName, itemLevel, quality = private.GetInfoFromItemKey(itemKey)
+			itemLevel = itemLevel or (itemKey.battlePetSpeciesID == 0 and itemKey.itemLevel) or nil
 			if filter:_IsItemFiltered(baseItemString, itemString, itemLevel, quality, itemName, totalQuantity, minPrice) or not filter:_ShouldScanItem(baseItemString, itemString, minPrice) then
 				tremove(results, i)
 			end
@@ -646,6 +647,8 @@ function private.ScanAuctionPageThreaded(auctionScan, filter)
 		local numInsertedRows = 0
 		for i = 1, #results do
 			local itemKey = results[i].itemKey
+			local minPrice = results[i].minPrice
+			local totalQuantity = results[i].totalQuantity
 
 			-- check if the item is a commodity or not
 			local isCommodity = ItemInfo.IsCommodity(itemKey.itemID)
@@ -658,7 +661,7 @@ function private.ScanAuctionPageThreaded(auctionScan, filter)
 				end
 			end
 
-			local success, scanNumInsertedRows = private.ScanItemKey83(auctionScan, filter, isCommodity, itemKey, false)
+			local success, scanNumInsertedRows = private.ScanItemKey83(auctionScan, filter, isCommodity, itemKey, false, minPrice, totalQuantity)
 			if not success then
 				return false
 			end
@@ -688,7 +691,7 @@ function private.ScanItemKey83(auctionScan, filter, isCommodity, itemKey, sellQu
 			if newItemLevel == 0 then
 				newItemLevel = nil
 			end
-			assert(not itemLevel or not newItemLevel or newItemLevel == itemLevel, format("Invalid level (%s, %s)", tostring(itemLevel), tostring(newItemLevel)))
+			assert(not itemLevel or not newItemLevel or newItemLevel == itemLevel, format("Invalid level (%s, %s, %s, %s)", baseItemString, itemKeyInfo.battlePetLink or "?", tostring(itemLevel), tostring(newItemLevel)))
 			itemLevel = itemLevel or newItemLevel
 		end
 		if not itemString and itemKeyInfo.battlePetLink then

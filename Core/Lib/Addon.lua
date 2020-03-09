@@ -75,7 +75,7 @@ function private.DoEnable()
 	end
 	if private.totalEnableTime == 0 then
 		for _, path, _, _, gameDataLoadTime in TSM.ModuleInfoIterator() do
-			if gameDataLoadTime > TIME_WARNING_THRESHOLD_MS then
+			if (gameDataLoadTime or 0) > TIME_WARNING_THRESHOLD_MS then
 				Log.Warn("Loading game data for %s took %0.2fms", path, gameDataLoadTime)
 			end
 		end

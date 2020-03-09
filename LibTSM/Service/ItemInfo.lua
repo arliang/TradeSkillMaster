@@ -582,9 +582,8 @@ function ItemInfo.GetMinLevel(item)
 	local minLevel = private.GetFieldValueHelper(itemString, "minLevel", baseIsSame, true, 0)
 	if not minLevel and ItemString.IsItem(itemString) then
 		local baseItemString = ItemString.GetBase(itemString)
-		local classId = ItemInfo.GetClassId(itemString)
-		local subClassId = ItemInfo.GetSubClassId(itemString)
-		if itemString ~= baseItemString and classId and subClassId and classId ~= LE_ITEM_CLASS_WEAPON and classId ~= LE_ITEM_CLASS_ARMOR and (classId ~= LE_ITEM_CLASS_GEM or subClassId ~= LE_ITEM_GEM_ARTIFACTRELIC) then
+		local canHaveVariations = ItemInfo.CanHaveVariations(itemString)
+		if itemString ~= baseItemString and canHaveVariations == false then
 			-- the bonusId does not affect the minLevel of this item
 			minLevel = ItemInfo.GetMinLevel(baseItemString)
 			if minLevel then
@@ -770,7 +769,17 @@ function ItemInfo.CanHaveVariations(item)
 	if not classId then
 		return nil
 	end
-	return classId == LE_ITEM_CLASS_ARMOR or classId == LE_ITEM_CLASS_WEAPON or classId == LE_ITEM_CLASS_BATTLEPET
+	if classId == LE_ITEM_CLASS_ARMOR or classId == LE_ITEM_CLASS_WEAPON or classId == LE_ITEM_CLASS_BATTLEPET then
+		return true
+	elseif classId == LE_ITEM_CLASS_GEM then
+		local subClassId = ItemInfo.GetSubClassId(item)
+		if not subClassId then
+			return nil
+		end
+		return subClassId == LE_ITEM_GEM_ARTIFACTRELIC
+	else
+		return false
+	end
 end
 
 --- Fetch info for the item.

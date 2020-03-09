@@ -11,17 +11,22 @@
 
 local _, TSM = ...
 local Wow = TSM.Init("Util.Wow")
-local ItemInfo = TSM.Include("Service.ItemInfo")
-TSM.Wow = Wow
-local private = {
-	itemLinkedCallbacks = {},
-}
 
 
 
 -- ============================================================================
 -- Module Functions
 -- ============================================================================
+
+--- Shows a basic Wow message popup.
+-- @tparam string text The text to display
+function Wow.ShowBasicMessage(text)
+	if BasicMessageDialog:IsShown() then
+		return
+	end
+	BasicMessageDialog.Text:SetText(text)
+	BasicMessageDialog:Show()
+end
 
 --- Shows a WoW static popup dialog.
 -- @tparam string name The unique (global) name of the dialog to be shown
@@ -33,23 +38,6 @@ function Wow.ShowStaticPopupDialog(name)
 			_G["StaticPopup" .. i]:SetFrameStrata("TOOLTIP")
 			break
 		end
-	end
-end
-
---- Sets the WoW tooltip to the specified link.
--- @tparam string link The itemLink or TSM itemString to show the tooltip for
-function Wow.SafeTooltipLink(link)
-	if strmatch(link, "p:") then
-		link = ItemInfo.GetLink(link)
-	end
-	if strmatch(link, "battlepet") then
-		local _, speciesID, level, breedQuality, maxHealth, power, speed = strsplit(":", link)
-		BattlePetToolTip_Show(tonumber(speciesID), tonumber(level) or 0, tonumber(breedQuality) or 0, tonumber(maxHealth) or 0, tonumber(power) or 0, tonumber(speed) or 0, gsub(gsub(link, "^(.*)%[", ""), "%](.*)$", ""))
-	elseif strmatch(link, "currency") then
-		local currencyID = strmatch(link, "currency:(%d+)")
-		GameTooltip:SetCurrencyByID(currencyID)
-	else
-		GameTooltip:SetHyperlink(ItemInfo.GetLink(link))
 	end
 end
 
@@ -78,52 +66,4 @@ end
 -- @treturn boolean Whether or not the addon is enabled
 function Wow.IsAddonEnabled(name)
 	return GetAddOnEnableState(UnitName("player"), name) == 2 and select(4, GetAddOnInfo(name)) and true or false
-end
-
---- Registers a function which is called when an item is linked.
--- @tparam function callback The function to be called
-function Wow.RegisterItemLinkedCallback(callback)
-	tinsert(private.itemLinkedCallbacks, callback)
-end
-
-
-
--- ============================================================================
--- Private Helper Functions
--- ============================================================================
-
-function private.HandleItemLinked(name, itemLink)
-	for _, callback in ipairs(private.itemLinkedCallbacks) do
-		if callback(name, itemLink) then
-			return true
-		end
-	end
-end
-
-
-
--- ============================================================================
--- Item Link Setup
--- ============================================================================
-
-do
-	local function HandleShiftClickItem(origFunc, itemLink)
-		local putIntoChat = origFunc(itemLink)
-		if putIntoChat then
-			return putIntoChat
-		end
-		local name = ItemInfo.GetName(itemLink)
-		if not name or not private.HandleItemLinked(name, itemLink) then
-			return putIntoChat
-		end
-		return true
-	end
-	local origHandleModifiedItemClick = HandleModifiedItemClick
-	HandleModifiedItemClick = function(link)
-		return HandleShiftClickItem(origHandleModifiedItemClick, link)
-	end
-	local origChatEdit_InsertLink = ChatEdit_InsertLink
-	ChatEdit_InsertLink = function(link)
-		return HandleShiftClickItem(origChatEdit_InsertLink, link)
-	end
 end
